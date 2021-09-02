@@ -4,7 +4,7 @@ This repo contains code to output investment portfolio suggestions based off the
 
 ## How to use
 
-<WIP>
+_WIP_
 
 ## Disclaimer
 
