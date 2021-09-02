@@ -4,7 +4,7 @@ import datetime
 import pandas as pd
 import numpy as np
 import pandas_datareader.data as web
-import sharpe,recommendations
+import sharpe
 
 def get_sp500():
     print("Getting list of S&P stock symbols...")        
@@ -12,10 +12,16 @@ def get_sp500():
     df=df[df['Symbol']!='GOOG'].reset_index(drop=True) # removing some stocks
     return df.head(500)
 
+def get_securities_list(securities):
+    symb_list = []
+    for item in securities:
+        symb_list.append(securities[item][1][0])
+    return symb_list
+
 def check_dtype_securities(securities):
 # different data types will flow through the program
     if(type(securities)==dict):
-        symb_list = recommendations.get_securities_list(securities)
+        symb_list = get_securities_list(securities)
     elif(type(securities)==list):
         symb_list = securities
     elif(type(securities)==pd.core.frame.DataFrame):
