@@ -3,14 +3,15 @@
 import datetime
 import pandas as pd
 import numpy as np
-import pandas_datareader.data as web
+import os
 import sharpe
 
 def get_sp500():
-    print("Getting list of S&P stock symbols...")        
-    df=pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[0][['GICS Sub-Industry','GICS Sector','Symbol']]
-    df=df[df['Symbol']!='GOOG'].reset_index(drop=True) # removing some stocks
-    return df.head(500)
+    print("Getting list of S&P stock symbols...")
+    os.system('curl -LJO https://raw.githubusercontent.com/datasets/s-and-p-500-companies/master/data/constituents.csv')
+    os.system('rm -r temp_data | mkdir temp_data | mv constituents.csv temp_data/sp500.csv')
+    df=pd.read_csv('temp_data/sp500.csv')
+    return df
 
 def get_securities_list(securities):
     symb_list = []
