@@ -3,7 +3,7 @@
 import datetime
 import pandas as pd
 import numpy as np
-import pandas_datareader.data as web
+from pandas_datareader import data as dr
 import utils
 import os
 from os import path

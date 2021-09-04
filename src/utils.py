@@ -40,7 +40,7 @@ def get_start(timeframe):
     return start
 
 def close_prices_loop(timeframe,security):
-# minimizes the number of simultaneous price requests 
+# minimizes the number of simultaneous stock price GET requests 
     print("Getting closing prices...")
     df = pd.DataFrame()
     num = len(security)
@@ -76,4 +76,5 @@ def trim_too_expensive(securities,max_price):
         if(row['Close']>max_price):
             securities = securities[securities['Symbol']!=row['Symbol']]
     print("Total securities: {}".format(len(securities)))
+    prices.to_csv('temp_data/securities.csv')
     return securities
