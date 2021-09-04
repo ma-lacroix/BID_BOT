@@ -68,6 +68,12 @@ def get_close_prices(timeframe,security):
         print("Couldn't connect to {} - {}".format(service,error))
     return df
 
+def get_log_ret(intdict,symb_list):
+    df = close_prices_loop(intdict,symb_list)
+    log_ret = pd.DataFrame(np.log(df['Close']/df['Close'].shift(1)))
+    log_ret.fillna(0,inplace=True)
+    return log_ret
+
 def trim_too_expensive(securities,max_price):
     prices = close_prices_loop('1d',securities['Symbol'])['Close'].max().reset_index()
     prices.columns = ['Symbol','Close']
@@ -76,5 +82,5 @@ def trim_too_expensive(securities,max_price):
         if(row['Close']>max_price):
             securities = securities[securities['Symbol']!=row['Symbol']]
     print("Total securities: {}".format(len(securities)))
-    prices.to_csv('temp_data/securities.csv')
+    securities.to_csv('temp_data/securities.csv')
     return securities

@@ -6,13 +6,9 @@ import utils,sharpe
 
 def main():
     
-    ##### DEBUG #####
-    # securities = utils.get_sp500()
-    securities = pd.read_csv('temp_data/sp500.csv').iloc[0:50]
-    ##### END DEBUG #####
-    
-    securities = utils.trim_too_expensive(securities,50)
-    # sharpe.print_portolio(securities,100,False)
+    securities = utils.get_sp500()
+    securities = utils.trim_too_expensive(securities,50) # 50 = arbitrary close price
+    sharpe.print_portolio(securities,100,False) # 100 simulations too low
     
 if __name__ == "__main__":
     main()
