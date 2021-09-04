@@ -4,12 +4,19 @@ import datetime
 import pandas as pd
 import numpy as np
 import os
+from pandas_datareader import data as dr
 import sharpe
 
 def get_sp500():
     print("Getting list of S&P stock symbols...")
+    # to rewrite in a bash script
     os.system('curl -LJO https://raw.githubusercontent.com/datasets/s-and-p-500-companies/master/data/constituents.csv')
-    os.system('rm -r temp_data | mkdir temp_data | mv constituents.csv temp_data/sp500.csv')
+    try:
+        os.system('rm -r temp_data ')
+        os.system('mkdir temp_data')
+    except:
+        print("no such directory")
+    os.system('mv constituents.csv temp_data/sp500.csv')
     df=pd.read_csv('temp_data/sp500.csv')
     return df
 
@@ -17,19 +24,6 @@ def get_securities_list(securities):
     symb_list = []
     for item in securities:
         symb_list.append(securities[item][1][0])
-    return symb_list
-
-def check_dtype_securities(securities):
-# different data types will flow through the program
-    if(type(securities)==dict):
-        symb_list = get_securities_list(securities)
-    elif(type(securities)==list):
-        symb_list = securities
-    elif(type(securities)==pd.core.frame.DataFrame):
-        symb_list = securities['Symbol']
-    else:
-        print("Wrong stock symbols data type - must be a list of dict")
-        symb_list = []
     return symb_list
 
 def get_start(timeframe):
@@ -68,15 +62,14 @@ def get_close_prices(timeframe,security):
     start = get_start(timeframe)
     end = datetime.datetime.today().strftime('%Y-%m-%d')    
     try:
-        df = np.round(web.DataReader(security,service,start,end)[['Close','Volume']],2)
+        df = np.round(dr.DataReader(security,service,start,end)[['Close','Volume']],2)
         df.sort_values('Date',inplace = True)
     except ValueError as error:
         print("Couldn't connect to {} - {}".format(service,error))
     return df
 
 def trim_too_expensive(securities,max_price):
-    symb_list = check_dtype_securities(securities)
-    prices = close_prices_loop('1d',symb_list)['Close'].max().reset_index()
+    prices = close_prices_loop('1d',securities['Symbol'])['Close'].max().reset_index()
     prices.columns = ['Symbol','Close']
     print(f"Keeping stocks with open prices below {max_price}")
     for index,row in prices.iterrows():
