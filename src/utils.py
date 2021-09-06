@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import os
 from pandas_datareader import data as dr
-import sharpe
+from pandas_datareader._utils import RemoteDataError
 
 def get_sp500():
     print("Getting list of S&P stock symbols...")
@@ -49,11 +49,15 @@ def close_prices_loop(timeframe,security):
     cnt = 0
     while(cnt<num-residue):
         print(f"Getting {cnt} to {cnt+incr-1}")
-        df = pd.concat([get_close_prices(timeframe,security[cnt:cnt+incr]),df])
+        df2 = get_close_prices(timeframe,security[cnt:cnt+incr]).reset_index(drop=True)
+        print(df.head())
+        df = pd.concat([df2,df],axis=1)
         cnt+=incr
     if(residue>0):
         print(f"Getting {cnt} to {cnt+residue}")
-        df = pd.concat([get_close_prices(timeframe,security[cnt:cnt+residue]),df])
+        df2 = get_close_prices(timeframe,security[cnt:cnt+residue]).reset_index(drop=True,inplace=True)
+        df.reset_index(drop=True,inplace=True)
+        df = pd.concat([df2,df],axis=1)
     df.fillna(0,inplace=True)
     return df
 
@@ -62,15 +66,16 @@ def get_close_prices(timeframe,security):
     start = get_start(timeframe)
     end = datetime.datetime.today().strftime('%Y-%m-%d')    
     try:
-        df = np.round(dr.DataReader(security,service,start,end)[['Close','Volume']],2)
-        df.sort_values('Date',inplace = True)
-    except ValueError as error:
-        print("Couldn't connect to {} - {}".format(service,error))
+        df = np.round(dr.DataReader(security,service,start,end)['Close'],2)
+        # df.sort_values('Date',inplace = True)
+    except RemoteDataError:
+        print("Data not found at Ticker {}".format(security))
     return df
 
 def get_log_ret(intdict,symb_list):
     df = close_prices_loop(intdict,symb_list)
-    log_ret = pd.DataFrame(np.log(df['Close']/df['Close'].shift(1)))
+    # log_ret = pd.DataFrame(df['Close']/df['Close'].shift(1))
+    log_ret = pd.DataFrame(np.log(df/df.shift(1)))
     log_ret.fillna(0,inplace=True)
     log_ret.to_csv('temp_data/returns.csv')
     return log_ret

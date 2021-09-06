@@ -30,8 +30,8 @@ def print_portolio(securities,simulations,grouping):
     try:
         
         ###### DEBUG ######
-        # log_returns = utils.get_log_ret('1m',securities['Symbol'])
-        log_returns = pd.read_csv('temp_data/returns.csv',index_col='Date')
+        log_returns = utils.get_log_ret('1m',securities['Symbol'])
+        # log_returns = pd.read_csv('temp_data/returns.csv',index_col='Date')
         ###### DEBUG ######
 
         if(grouping):
