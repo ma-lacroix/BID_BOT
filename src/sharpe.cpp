@@ -72,6 +72,6 @@ int main(){
     std::vector<float> dummy_returns {10.0,0.5,0.5,0.23,0.1};
     std::vector<float> dummy_cov {};
     std::vector<float> sharpe_arr {};
-    sharpe_arr = get_sharpe_ratios(5,dummy_returns); // 10 just a placeholder
+    sharpe_arr = get_sharpe_ratios(5,dummy_returns,dummy_cov); // 10 just a placeholder
     return 0;
 }

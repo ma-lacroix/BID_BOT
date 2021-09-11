@@ -49,8 +49,7 @@ def close_prices_loop(timeframe,security):
     cnt = 0
     while(cnt<num-residue):
         print(f"Getting {cnt} to {cnt+incr-1}")
-        df2 = get_close_prices(timeframe,security[cnt:cnt+incr]).reset_index(drop=True)
-        print(df.head())
+        df2 = get_close_prices(timeframe,security[cnt:cnt+incr])
         df = pd.concat([df2,df],axis=1)
         cnt+=incr
     if(residue>0):

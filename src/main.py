@@ -10,7 +10,7 @@ def main():
     # securities = utils.trim_too_expensive(securities,50) # 50 = arbitrary close price
     ###### DEBUG ######
     securities = pd.read_csv('temp_data/securities.csv')[0:20]
-    sharpe.print_portolio(securities,1000,False) # 100 simulations too low
+    sharpe.print_portolio(securities,1,False) # 100 simulations too low
     
 if __name__ == "__main__":
     main()
