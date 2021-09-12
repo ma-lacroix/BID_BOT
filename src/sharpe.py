@@ -21,9 +21,8 @@ def get_sharp_ratio(simulations,df):
         weights = weights / np.sum(weights)
         all_weights[ind,:] = weights
         ret_arr[ind] = np.sum((df.mean() * weights) *len(df))
-        print(np.dot(df.cov() * len(df), weights))
-
-        vol_arr[ind] = np.sqrt(np.dot(weights.T, np.dot(df.cov() * len(df), weights)))
+        # vol_arr[ind] = np.sqrt(np.dot(weights.T, np.dot(df.cov() * len(df), weights)))
+        vol_arr[ind] = np.dot(df.std()*len(df), weights)
         sharpe_arr[ind] = ret_arr[ind]/vol_arr[ind]
     return np.round(all_weights[sharpe_arr.argmax(),:],3)
 
