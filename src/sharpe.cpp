@@ -1,6 +1,24 @@
+#include <Python.h>
 #include <iostream>
 #include <vector>
 #include <ctime>
+
+// std::vector<float> listTupleToVector_Int(PyObject* incoming) {
+std::vector<float> listTupleToVector_Int(PyObject* incoming) {
+// experimental function to convert Python lists to c++
+
+    std::vector<float> data;
+	
+    for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) {
+        PyObject *value = PyList_GetItem(incoming, i);
+        data.push_back( PyFloat_AsDouble(value) );
+    }
+
+    for(size_t i {0};i < data.size(); ++i){
+        std::cout << data.at(i) << std::endl;
+    }
+	return data;
+}
 
 std::vector<float> gen_random_weights(int vec_length){
 // generates random portfolio allocation weights
@@ -20,6 +38,7 @@ std::vector<float> gen_random_weights(int vec_length){
     return weights;
 }
 
+
 float get_return(std::vector<float> &weights, std::vector<float> &log_returns_means, std::vector<float> &log_returns_std){
 // returns expected ROI given security weights
     float num {0.0};
@@ -33,6 +52,7 @@ float get_return(std::vector<float> &weights, std::vector<float> &log_returns_me
     return sharpe;
 }
 
+extern "C"
 size_t optimal_portolio(std::vector<float> &sharpe_arr){
     
     size_t best_pos;
@@ -41,6 +61,7 @@ size_t optimal_portolio(std::vector<float> &sharpe_arr){
 
 }
 
+extern "C"
 std::vector<float> get_sharpe_ratios(int simulations, std::vector<float> log_returns_means,
                                     std::vector<float> log_returns_std){
     
@@ -65,7 +86,7 @@ int main(){
     // TESTING DATA //
     std::vector<std::string> dummy_stocks {"GLW","CTVA","CAG","CF","BSX"};
     std::vector<float> dummy_returns {100.0,0.01,0.01,23.0,0.10};
-    std::vector<float> dummy_std {0.1,10.0,10.0,0.01,0.04};
+    std::vector<float> dummy_std {0.1,10.0,10.0,1.01,0.04};
     std::vector<float> portfolio {};
     // END TESTING DATA //
     
