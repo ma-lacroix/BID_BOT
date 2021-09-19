@@ -3,21 +3,14 @@
 #include <vector>
 #include <ctime>
 
-// std::vector<float> listTupleToVector_Int(PyObject* incoming) {
-std::vector<float> listTupleToVector_Int(PyObject* incoming) {
-// experimental function to convert Python lists to c++
-
-    std::vector<float> data;
-	
-    for(Py_ssize_t i = 0; i < PyList_Size(incoming); i++) {
-        PyObject *value = PyList_GetItem(incoming, i);
-        data.push_back( PyFloat_AsDouble(value) );
+extern "C"
+void someSum(float *l, float *r){
+    float asum {0};
+    int loop {5};
+    while(loop--){
+        asum+=l[loop]*r[loop];
     }
-
-    for(size_t i {0};i < data.size(); ++i){
-        std::cout << data.at(i) << std::endl;
-    }
-	return data;
+    std::cout << asum << std::endl;
 }
 
 std::vector<float> gen_random_weights(int vec_length){
@@ -61,7 +54,6 @@ size_t optimal_portolio(std::vector<float> &sharpe_arr){
 
 }
 
-extern "C"
 std::vector<float> get_sharpe_ratios(int simulations, std::vector<float> log_returns_means,
                                     std::vector<float> log_returns_std){
     
@@ -89,7 +81,7 @@ int main(){
     std::vector<float> dummy_std {0.1,10.0,10.0,1.01,0.04};
     std::vector<float> portfolio {};
     // END TESTING DATA //
-    
+
     portfolio = get_sharpe_ratios(10000000,dummy_returns,dummy_std); // 10 just a placeholder
     
     std::cout << "\nOptimal portfolio: " << std::endl;
