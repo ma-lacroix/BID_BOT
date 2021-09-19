@@ -1,17 +1,7 @@
-#include <Python.h>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <ctime>
-
-extern "C"
-void someSum(float *l, float *r){
-    float asum {0};
-    int loop {5};
-    while(loop--){
-        asum+=l[loop]*r[loop];
-    }
-    std::cout << asum << std::endl;
-}
 
 std::vector<float> gen_random_weights(int vec_length){
 // generates random portfolio allocation weights
@@ -51,7 +41,6 @@ size_t optimal_portolio(std::vector<float> &sharpe_arr){
     size_t best_pos;
     best_pos = std::distance(sharpe_arr.begin(),std::max_element(sharpe_arr.begin(),sharpe_arr.end()));
     return best_pos;
-
 }
 
 std::vector<float> get_sharpe_ratios(int simulations, std::vector<float> log_returns_means,
@@ -73,21 +62,42 @@ std::vector<float> get_sharpe_ratios(int simulations, std::vector<float> log_ret
     return all_weights.at(best_pos);
 }
 
+void write_to_File(std::vector<float> vec){
+    std::ofstream outdata;
+    outdata.open("temp_data/ratios.csv");
+    outdata << "Ratios" << std::endl;
+    for(auto& element: vec){
+        outdata << element << std::endl;
+    }
+    outdata.close();
+}
+
+extern "C"
+void showSharpe(float *dummy_returns,float *dummy_std, int arr_size){
+    std::vector<std::string> dummy_stocks {"AES","AMCR","AAL","APA","T","BKR","BAC","BRK","BWA","BSX","BF","COG","CPB","CCL","CNP","CF","CFG","CAG","GLW","CTVA","CSX","DAL","DVN","DISCA","DISCK","DISH","DXC","EXC","FITB","FE","F"};
+    size_t arr_len = arr_size;
+    std::vector<float> portfolio {};
+
+    std::vector<float> returns;
+    for(size_t i {0};i < arr_len;++i){
+        returns.push_back(dummy_returns[i]);
+    }
+    std::vector<float> stds;
+    for(size_t i {0};i < arr_len;++i){
+        stds.push_back(dummy_std[i]);
+    }
+
+    portfolio = get_sharpe_ratios(10000,returns,stds); // 10 just a placeholder
+    
+    write_to_File(portfolio); 
+}
+
 int main(){
     
     // TESTING DATA //
-    std::vector<std::string> dummy_stocks {"GLW","CTVA","CAG","CF","BSX"};
     std::vector<float> dummy_returns {100.0,0.01,0.01,23.0,0.10};
     std::vector<float> dummy_std {0.1,10.0,10.0,1.01,0.04};
-    std::vector<float> portfolio {};
     // END TESTING DATA //
-
-    portfolio = get_sharpe_ratios(10000000,dummy_returns,dummy_std); // 10 just a placeholder
-    
-    std::cout << "\nOptimal portfolio: " << std::endl;
-    for(size_t i {0};i<portfolio.size();++i){
-        std::cout << dummy_stocks.at(i) << ": " << portfolio.at(i) << std::endl;
-    }
     
     return 0;
 }

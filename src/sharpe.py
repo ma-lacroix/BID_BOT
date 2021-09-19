@@ -5,8 +5,25 @@ import pandas as pd
 import numpy as np
 from pandas_datareader import data as dr
 import utils
+import csv
 import os
 from os import path
+import ctypes
+
+def compile(libName,sourceFile):
+    os.system("g++ --std=c++17 -shared -Wl,-install_name,{n}.so -o {n}.so -fPIC {s}.cpp "\
+            "-I/Library/Frameworks/Python.framework/Versions/3.9/include/python3.9".format(n=libName,s=sourceFile))
+
+def cpp_ratios(df):
+    compile('src/cpp_sharpe','src/sharpe')
+    cpp_sharpe = ctypes.CDLL('src/cpp_sharpe.so')
+    dummy_returns = list(df.mean()*len(df))
+    dummy_std = list(df.std()*len(df))
+    arr_size = (ctypes.c_int)
+    arr_size = len(dummy_std)
+    arr1 = (ctypes.c_float*len(dummy_returns))(*dummy_returns)
+    arr2 = (ctypes.c_float*len(dummy_std))(*dummy_std)
+    cpp_sharpe.showSharpe(arr1,arr2,arr_size)
 
 def get_sharp_ratio(simulations,df):
 # to be rewritten in C++ to handle much higher number of simulations
@@ -38,9 +55,12 @@ def print_portolio(securities,simulations,grouping):
         if(grouping):
             log_returns.columns=securities['Sector']
             log_returns = log_returns.groupby(log_returns.columns, axis=1).sum()
-        sol = get_sharp_ratio(simulations,log_returns)
+        # sol = get_sharp_ratio(simulations,log_returns)
+        cpp_ratios(log_returns)
         print("Optimal portfolio allocation (based on last month): ")
-        for row in zip(log_returns.columns,sol):
-            print(row[0],': ',row[1])
+        sol = open('temp_data/ratios.csv')
+        r = csv.reader(sol)
+        for row in zip(log_returns.columns,r):
+            print(row[0],row[1])
     except ValueError as error:
         print("Couldn't get Sharpe ratios - {}".format(error))
