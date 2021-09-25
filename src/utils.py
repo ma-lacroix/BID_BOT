@@ -1,11 +1,14 @@
 # collection of tools to analyse stock information
-
 import datetime
 import pandas as pd
 import numpy as np
 import os
 from pandas_datareader import data as dr
 from pandas_datareader._utils import RemoteDataError
+import utils
+import csv
+import os
+import ctypes
 
 def get_sp500():
     print("Getting list of S&P stock symbols...")
@@ -89,3 +92,33 @@ def trim_too_expensive(securities,max_price):
     print("Total securities: {}".format(len(securities)))
     securities.to_csv('temp_data/securities.csv')
     return securities
+
+def compile(libName,sourceFile):
+    os.system("g++ --std=c++17 -shared -Wl,-install_name,{n}.so -o {n}.so -fPIC {s}.cpp "\
+            "-I/Library/Frameworks/Python.framework/Versions/3.9/include/python3.9".format(n=libName,s=sourceFile))
+
+def cpp_ratios(df,simulations):
+    compile('cpp_sharpe','sharpe')
+    cpp_sharpe = ctypes.CDLL('cpp_sharpe.so')
+    dummy_returns = list(df.mean()*len(df))
+    dummy_std = list(df.std()*len(df))
+    arr_size = (ctypes.c_int)
+    arr_size = len(dummy_std)
+    arr1 = (ctypes.c_float*len(dummy_returns))(*dummy_returns)
+    arr2 = (ctypes.c_float*len(dummy_std))(*dummy_std)
+    cpp_sharpe.showSharpe(simulations,arr1,arr2,arr_size)
+
+def print_portolio(securities,simulations,grouping):
+    print("\nToday's date: {}\r".format(datetime.date.today()))
+    try:
+        
+        log_returns = get_log_ret('3m',securities['Symbol'])
+
+        cpp_ratios(log_returns,simulations)
+        print("Optimal portfolio allocation (based on last month): ")
+        sol = open('temp_data/ratios.csv')
+        r = csv.reader(sol)
+        for row in zip(log_returns.columns[1:],r):
+            print(row[0],row[1][0][0:4])
+    except ValueError as error:
+        print("Couldn't get Sharpe ratios - {}".format(error))

@@ -65,7 +65,6 @@ std::vector<float> get_sharpe_ratios(int simulations, std::vector<float> log_ret
 void write_to_File(std::vector<float> vec){
     std::ofstream outdata;
     outdata.open("temp_data/ratios.csv");
-    outdata << "Ratios" << std::endl;
     for(auto& element: vec){
         outdata << element << std::endl;
     }
