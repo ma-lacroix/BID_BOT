@@ -73,8 +73,7 @@ void write_to_File(std::vector<float> vec){
 }
 
 extern "C"
-void showSharpe(float *dummy_returns,float *dummy_std, int arr_size){
-    std::vector<std::string> dummy_stocks {"AES","AMCR","AAL","APA","T","BKR","BAC","BRK","BWA","BSX","BF","COG","CPB","CCL","CNP","CF","CFG","CAG","GLW","CTVA","CSX","DAL","DVN","DISCA","DISCK","DISH","DXC","EXC","FITB","FE","F"};
+void showSharpe(int simulations, float *dummy_returns,float *dummy_std, int arr_size){
     size_t arr_len = arr_size;
     std::vector<float> portfolio {};
 
@@ -87,7 +86,7 @@ void showSharpe(float *dummy_returns,float *dummy_std, int arr_size){
         stds.push_back(dummy_std[i]);
     }
 
-    portfolio = get_sharpe_ratios(10000,returns,stds); // 10 just a placeholder
+    portfolio = get_sharpe_ratios(simulations,returns,stds); // 10 just a placeholder
     
     write_to_File(portfolio); 
 }

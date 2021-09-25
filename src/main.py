@@ -7,12 +7,9 @@ import os
 
 def main():
     
-    ###### DEBUG ######
-    securities = utils.get_sp500()[0:200]
-    securities = utils.trim_too_expensive(securities,50) # 50 = arbitrary close price
-    ###### DEBUG ######
-    # securities = pd.read_csv('temp_data/securities.csv')[0:20]
-    sharpe.print_portolio(securities,1,False) 
+    securities = utils.get_sp500()
+    securities = utils.trim_too_expensive(securities,30) # 50 = arbitrary close price
+    sharpe.print_portolio(securities,10000000,False) 
 
 
     
