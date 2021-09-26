@@ -76,6 +76,7 @@ def get_close_prices(timeframe,security):
 
 def get_log_ret(intdict,symb_list):
     df = close_prices_loop(intdict,symb_list)
+    df.to_csv('temp_data/daily_closes.csv')
     log_ret = pd.DataFrame(df['Close']/df['Close'].shift(1))
     # log_ret = pd.DataFrame(np.log(df/df.shift(1)))
     log_ret.fillna(0,inplace=True)
@@ -90,6 +91,7 @@ def trim_too_expensive(securities,max_price):
         if(row['Close']>max_price):
             securities = securities[securities['Symbol']!=row['Symbol']]
     print("Total securities: {}".format(len(securities)))
+    securities = pd.merge(securities,prices,on='Symbol',how='left')
     securities.to_csv('temp_data/securities.csv')
     return securities
 
@@ -113,7 +115,6 @@ def print_portolio(securities,simulations,grouping):
     try:
         
         log_returns = get_log_ret('3m',securities['Symbol'])
-
         cpp_ratios(log_returns,simulations)
         print("Optimal portfolio allocation (based on last month): ")
         sol = open('temp_data/ratios.csv')

@@ -2,10 +2,12 @@
 # Author: Marc-Antoine Lacroix
 
 import utils
+import pandas as pd
 
 def main():
     
     securities = utils.get_sp500()
+    securities = securities[securities['Sector'].isin(['Health Care','Energy'])]
     securities = utils.trim_too_expensive(securities,100)
     utils.print_portolio(securities,1000000,False) 
 
