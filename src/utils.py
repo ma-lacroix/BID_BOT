@@ -1,5 +1,6 @@
 # collection of tools to analyse stock information
 import datetime
+from typing import final
 import pandas as pd
 import numpy as np
 import os
@@ -110,16 +111,22 @@ def cpp_ratios(df,simulations):
     arr2 = (ctypes.c_float*len(dummy_std))(*dummy_std)
     cpp_sharpe.showSharpe(simulations,arr1,arr2,arr_size)
 
-def print_portolio(securities,simulations,grouping):
-    print("\nToday's date: {}\r".format(datetime.date.today()))
+def print_portolio(securities,simulations):
+    today = datetime.datetime.strftime(datetime.datetime.today(),'%Y-%m-%d')
+    print("\nToday's date: {}\r".format(today))
+    fdict = {'Symbol':[],'Share':[]}
+    final_df = pd.DataFrame()
     try:
-        
         log_returns = get_log_ret('3m',securities['Symbol'])
         cpp_ratios(log_returns,simulations)
-        print("Optimal portfolio allocation (based on last month): ")
         sol = open('temp_data/ratios.csv')
         r = csv.reader(sol)
         for row in zip(log_returns.columns[1:],r):
-            print(row[0],row[1][0][0:4])
+            fdict['Symbol'].append(row[0])
+            fdict['Share'].append(row[1][0][0:4])
+        final_df = pd.DataFrame.from_dict(fdict)
+        final_df = pd.merge(final_df,securities,on='Symbol')[['Symbol','Share','Close','Name','Sector']].reset_index(drop=True)
+        final_df.to_csv('temp_data/portfolio_{}.csv'.format(today),index=False)
+        print("Done producing optimal portfolio")
     except ValueError as error:
         print("Couldn't get Sharpe ratios - {}".format(error))
