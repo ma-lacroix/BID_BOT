@@ -1,4 +1,5 @@
 # collection of tools to analyse stock information
+
 import datetime
 from typing import final
 import pandas as pd
@@ -6,7 +7,6 @@ import numpy as np
 import os
 from pandas_datareader import data as dr
 from pandas_datareader._utils import RemoteDataError
-import utils
 import csv
 import os
 import ctypes
@@ -18,6 +18,7 @@ def get_sp500():
     try:
         os.system('rm -r temp_data ')
         os.system('mkdir temp_data')
+        os.system('mkdir results')
     except:
         print("no such directory")
     os.system('mv constituents.csv temp_data/sp500.csv')
@@ -48,8 +49,8 @@ def close_prices_loop(timeframe,security):
     print("Getting closing prices...")
     df = pd.DataFrame()
     num = len(security)
-    residue = num%10
-    incr = int((num-residue)/10)
+    residue = num%5
+    incr = int((num-residue)/5)
     cnt = 0
     while(cnt<num-residue):
         print(f"Getting {cnt} to {cnt+incr-1}")
@@ -111,7 +112,7 @@ def cpp_ratios(df,simulations):
     arr2 = (ctypes.c_float*len(dummy_std))(*dummy_std)
     cpp_sharpe.showSharpe(simulations,arr1,arr2,arr_size)
 
-def print_portolio(securities,simulations):
+def gen_portolio(securities,simulations,sector):
     today = datetime.datetime.strftime(datetime.datetime.today(),'%Y-%m-%d')
     print("\nToday's date: {}\r".format(today))
     fdict = {'Symbol':[],'Share':[]}
@@ -126,7 +127,13 @@ def print_portolio(securities,simulations):
             fdict['Share'].append(row[1][0][0:4])
         final_df = pd.DataFrame.from_dict(fdict)
         final_df = pd.merge(final_df,securities,on='Symbol')[['Symbol','Share','Close','Name','Sector']].reset_index(drop=True)
-        final_df.to_csv('temp_data/portfolio_{}.csv'.format(today),index=False)
+        final_df.to_csv('results/portfolio_{}_{}.csv'.format(sector.lower().replace(' ','_'),today),index=False)
         print("Done producing optimal portfolio")
     except ValueError as error:
         print("Couldn't get Sharpe ratios - {}".format(error))
+
+def update(sector):
+    securities = get_sp500()
+    securities = securities[securities['Sector']==sector]
+    securities = trim_too_expensive(securities,100)
+    gen_portolio(securities,100,sector)

@@ -1,15 +1,12 @@
 # Personal stock portfolio creator WIP
 # Author: Marc-Antoine Lacroix
 
-import utils
-import pandas as pd
+import portfolio_management as pm
 
 def main():
     
-    securities = utils.get_sp500()
-    securities = securities[securities['Sector'].isin(['Health Care','Energy'])]
-    securities = utils.trim_too_expensive(securities,100)
-    utils.print_portolio(securities,100) 
+    healthcare = pm.Portfolio(100,'Health Care')
+    healthcare.trigger_update()
 
 if __name__ == "__main__":
     main()
