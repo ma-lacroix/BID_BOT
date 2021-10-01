@@ -7,10 +7,11 @@ import utils
 
 class Portfolio:
 
-    def __init__(self,stocks,sector):
+    def __init__(self,stocks,sector,maxPrice):
         self.csv_file = ""
         self.stocks = stocks
         self.sector = sector
+        self.maxPrice = maxPrice
         self.df = pd.DataFrame()
 
     def init_csv_file(self):
@@ -41,7 +42,7 @@ class Portfolio:
         print(np.round(np.sum(self.df.total_price),2))
 
     def trigger_update(self):
-        utils.update(self.sector)
+        utils.update(self.sector,self.maxPrice)
         self.init_csv_file()
         self.init_df()
         self.get_shares()

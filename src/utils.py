@@ -33,34 +33,33 @@ def get_securities_list(securities):
 
 def get_start(timeframe):
     if(timeframe=='1d'):
-        start = (datetime.datetime.today()-datetime.timedelta(days=2)).strftime('%Y-%m-%d')
+        start = (datetime.datetime.today()-datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     elif(timeframe=='1w'):
         start = (datetime.datetime.today()-datetime.timedelta(days=8)).strftime('%Y-%m-%d')
     elif(timeframe=='1m'):
         start = (datetime.datetime.today()-datetime.timedelta(days=31)).strftime('%Y-%m-%d')
     elif(timeframe=='3m'):
         start = (datetime.datetime.today()-datetime.timedelta(days=93)).strftime('%Y-%m-%d')
+    elif(timeframe=='6m'):
+        start = (datetime.datetime.today()-datetime.timedelta(days=186)).strftime('%Y-%m-%d')
     else:
         start = datetime.datetime.today().strftime('%Y-%m-%d')
     return start
 
 def close_prices_loop(timeframe,security):
 # minimizes the number of simultaneous stock price GET requests 
-    print("Getting closing prices...")
+    print("Getting closing prices for the last {}...".format(timeframe))
     df = pd.DataFrame()
     num = len(security)
     residue = num%5
     incr = int((num-residue)/5)
     cnt = 0
     while(cnt<num-residue):
-        print(f"Getting {cnt} to {cnt+incr-1}")
         df2 = get_close_prices(timeframe,security[cnt:cnt+incr])
         df = pd.concat([df2,df],axis=1)
         cnt+=incr
     if(residue>0):
-        print(f"Getting {cnt} to {cnt+residue}")
-        df2 = get_close_prices(timeframe,security[cnt:cnt+residue])['Close'].reset_index(drop=True,inplace=True)
-        df.reset_index(drop=True,inplace=True)
+        df2 = get_close_prices(timeframe,security[cnt:cnt+residue+1])
         df = pd.concat([df2,df],axis=1)
     df.fillna(0,inplace=True)
     return df
@@ -92,8 +91,8 @@ def trim_too_expensive(securities,max_price):
     for index,row in prices.iterrows():
         if(row['Close']>max_price):
             securities = securities[securities['Symbol']!=row['Symbol']]
-    print("Total securities: {}".format(len(securities)))
-    securities = pd.merge(securities,prices,on='Symbol',how='left')
+    print("Total securities: {}".format(len(securities.index)))
+    securities = pd.merge(securities,prices,on='Symbol',how='inner')
     securities.to_csv('temp_data/securities.csv')
     return securities
 
@@ -122,7 +121,7 @@ def gen_portolio(securities,simulations,sector):
         cpp_ratios(log_returns,simulations)
         sol = open('temp_data/ratios.csv')
         r = csv.reader(sol)
-        for row in zip(log_returns.columns[1:],r):
+        for row in zip(log_returns.columns,r):
             fdict['Symbol'].append(row[0])
             fdict['Share'].append(row[1][0][0:4])
         final_df = pd.DataFrame.from_dict(fdict)
@@ -132,8 +131,8 @@ def gen_portolio(securities,simulations,sector):
     except ValueError as error:
         print("Couldn't get Sharpe ratios - {}".format(error))
 
-def update(sector):
+def update(sector,maxPrice):
     securities = get_sp500()
     securities = securities[securities['Sector']==sector]
-    securities = trim_too_expensive(securities,100)
-    gen_portolio(securities,100,sector)
+    securities = trim_too_expensive(securities,maxPrice)
+    gen_portolio(securities,10000000,sector)
