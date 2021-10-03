@@ -78,7 +78,7 @@ def get_close_prices(timeframe,security):
 def get_log_ret(intdict,symb_list):
     df = close_prices_loop(intdict,symb_list)
     df.to_csv('temp_data/daily_closes.csv')
-    log_ret = pd.DataFrame(df['Close']/df['Close'].shift(1))
+    log_ret = pd.DataFrame(df['Close']/df['Close'].shift(1)-1)
     # log_ret = pd.DataFrame(np.log(df/df.shift(1)))
     log_ret.fillna(0,inplace=True)
     log_ret.to_csv('temp_data/returns.csv')
