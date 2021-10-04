@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import os
 import utils
+import gcp
 
 class Portfolio:
 
@@ -48,3 +49,5 @@ class Portfolio:
         self.init_df()
         self.get_shares()
         self.cash_needed()
+        gcp.trigger_upload(self.csv_file)
+        
