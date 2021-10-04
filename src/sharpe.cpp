@@ -91,11 +91,6 @@ void showSharpe(int simulations, float *dummy_returns,float *dummy_std, int arr_
 }
 
 int main(){
-    
-    // TESTING DATA //
-    std::vector<float> dummy_returns {100.0,0.01,0.01,23.0,0.10};
-    std::vector<float> dummy_std {0.1,10.0,10.0,1.01,0.04};
-    // END TESTING DATA //
-    
+    std::cout << "Running program" << std::endl;
     return 0;
 }
