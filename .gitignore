@@ -143,6 +143,7 @@ ENV/
 env.bak/
 venv.bak/
 temp_data/
+key/
 results/
 *.xml.py
 .vscode
@@ -164,3 +165,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# data
+*.json
+*.csv
