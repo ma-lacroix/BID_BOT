@@ -101,7 +101,6 @@ def compile(libName,sourceFile):
             "-I/Library/Frameworks/Python.framework/Versions/3.9/include/python3.9".format(n=libName,s=sourceFile))
 
 def cpp_ratios(df,simulations):
-    compile('cpp_sharpe','sharpe')
     cpp_sharpe = ctypes.CDLL('cpp_sharpe.so')
     dummy_returns = list(df.mean()*len(df))
     dummy_std = list(df.std()*len(df))
@@ -132,7 +131,7 @@ def gen_portolio(securities,simulations,sector):
         print("Couldn't get Sharpe ratios - {}".format(error))
 
 def update(sector,maxPrice):
-    securities = get_sp500()
+    securities = pd.read_csv('temp_data/sp500.csv')
     securities = securities[securities['Sector']==sector]
     securities = trim_too_expensive(securities,maxPrice)
     gen_portolio(securities,10000000,sector)
