@@ -34,9 +34,10 @@ class Portfolio:
             else:
                 total_price.append(0)
                 total_stocks.append(0)
-        self.df['total_price'] = total_price
-        self.df['total_stocks'] = total_stocks
-        print(self.df)            
+        self.df['total_price'] = np.round(total_price,2)
+        self.df['total_stocks'] = np.round(total_stocks,0)
+        self.df.to_csv(self.csv_file,index=False) # overwrite results file            
+        print(self.df)
 
     def cash_needed(self):
         print(np.round(np.sum(self.df.total_price),2))
