@@ -20,7 +20,6 @@ def read_csv(projectId,csv,client):
     table = 'bid_bot.' + csv.replace('.csv','')\
                             .replace('results/','')\
                             .replace('portfolio_','')\
-                            .replace('_','')\
                             .replace('-','')
     print(table)
     df.to_gbq(table,project_id=projectId,credentials=client,if_exists='replace')
