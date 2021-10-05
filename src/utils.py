@@ -125,7 +125,8 @@ def gen_portolio(securities,simulations,sector):
             fdict['Share'].append(row[1][0][0:4])
         final_df = pd.DataFrame.from_dict(fdict)
         final_df = pd.merge(final_df,securities,on='Symbol')[['Symbol','Share','Close','Name','Sector']].reset_index(drop=True)
-        final_df.to_csv('results/portfolio_{}_{}.csv'.format(sector.lower().replace(' ','_'),today),index=False)
+        final_df['yyyy_mm_dd'] = today
+        final_df.to_csv('results/{}_{}.csv'.format(sector.lower().replace(' ','_'),today),index=False)
         print("Done producing optimal portfolio")
     except ValueError as error:
         print("Couldn't get Sharpe ratios - {}".format(error))

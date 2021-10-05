@@ -37,17 +37,17 @@ class Portfolio:
                 total_stocks.append(0)
         self.df['total_price'] = np.round(total_price,2)
         self.df['total_stocks'] = np.round(total_stocks,0)
+        totals = {'Symbol':'TOTAL','Share':1.0,'Close':np.sum(self.df['Close']),
+                    'Name':'TOTAL','total_price':np.sum(self.df['total_price']),
+                    'total_stocks':np.sum(self.df['total_stocks'])}
+        self.df = self.df.append(totals,ignore_index=True)
         self.df.to_csv(self.csv_file,index=False) # overwrite results file            
         print(self.df)
-
-    def cash_needed(self):
-        print(np.round(np.sum(self.df.total_price),2))
 
     def trigger_update(self):
         utils.update(self.sector,self.maxPrice)
         self.init_csv_file()
         self.init_df()
         self.get_shares()
-        self.cash_needed()
         gcp.trigger_upload(self.csv_file)
         
