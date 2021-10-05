@@ -21,7 +21,7 @@ class Portfolio:
 
     def init_df(self):
         self.df = pd.read_csv(self.csv_file)
-        self.df = self.df[self.df['Sector']==self.sector][['Symbol','Share','Close','Name']]\
+        self.df = self.df[['yyyy_mm_dd','Symbol','Share','Close','Name']]\
             .sort_values(by='Share',ascending=False).reset_index(drop=True)
     
     def get_shares(self):
@@ -37,7 +37,7 @@ class Portfolio:
                 total_stocks.append(0)
         self.df['total_price'] = np.round(total_price,2)
         self.df['total_stocks'] = np.round(total_stocks,0)
-        totals = {'Symbol':'TOTAL','Share':1.0,'Close':np.sum(self.df['Close']),
+        totals = {'yyyy_mm_dd':self.df['yyyy_mm_dd'][0],'Symbol':'TOTAL','Share':1.0,'Close':np.sum(self.df['Close']),
                     'Name':'TOTAL','total_price':np.sum(self.df['total_price']),
                     'total_stocks':np.sum(self.df['total_stocks'])}
         self.df = self.df.append(totals,ignore_index=True)

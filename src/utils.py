@@ -113,7 +113,7 @@ def cpp_ratios(df,simulations):
 def gen_portolio(securities,simulations,sector):
     today = datetime.datetime.strftime(datetime.datetime.today(),'%Y-%m-%d')
     print("\nToday's date: {}\r".format(today))
-    fdict = {'Symbol':[],'Share':[]}
+    fdict = {'yyyy_mm_dd':[],'Symbol':[],'Share':[]}
     final_df = pd.DataFrame()
     try:
         log_returns = get_log_ret('3m',securities['Symbol'])
@@ -121,11 +121,11 @@ def gen_portolio(securities,simulations,sector):
         sol = open('temp_data/ratios.csv')
         r = csv.reader(sol)
         for row in zip(log_returns.columns,r):
+            fdict['yyyy_mm_dd'].append(today)
             fdict['Symbol'].append(row[0])
             fdict['Share'].append(row[1][0][0:4])
         final_df = pd.DataFrame.from_dict(fdict)
-        final_df = pd.merge(final_df,securities,on='Symbol')[['Symbol','Share','Close','Name','Sector']].reset_index(drop=True)
-        final_df['yyyy_mm_dd'] = today
+        final_df = pd.merge(final_df,securities,on='Symbol')[['yyyy_mm_dd','Symbol','Share','Close','Name','Sector']].reset_index(drop=True)
         final_df.to_csv('results/{}_{}.csv'.format(sector.lower().replace(' ','_'),today),index=False)
         print("Done producing optimal portfolio")
     except ValueError as error:
