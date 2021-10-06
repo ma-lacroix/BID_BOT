@@ -36,11 +36,11 @@ def get_start(timeframe):
         start = (datetime.datetime.today()-datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     elif(timeframe=='1w'):
         start = (datetime.datetime.today()-datetime.timedelta(days=8)).strftime('%Y-%m-%d')
-    elif(timeframe=='1m'):
+    elif(timeframe=='1m' or timeframe=='1mago'):
         start = (datetime.datetime.today()-datetime.timedelta(days=31)).strftime('%Y-%m-%d')
-    elif(timeframe=='3m'):
-        start = (datetime.datetime.today()-datetime.timedelta(days=93)).strftime('%Y-%m-%d')
-    elif(timeframe=='6m'):
+    elif(timeframe=='3m' or timeframe=='3mago'):
+        start = (datetime.datetime.today()-datetime.timedelta(days=93)).strftime('%Y-%m-%d')        
+    elif(timeframe=='6m' or timeframe=='6mago'):
         start = (datetime.datetime.today()-datetime.timedelta(days=186)).strftime('%Y-%m-%d')
     else:
         start = datetime.datetime.today().strftime('%Y-%m-%d')
@@ -67,7 +67,14 @@ def close_prices_loop(timeframe,security):
 def get_close_prices(timeframe,security):    
     service = 'yahoo'
     start = get_start(timeframe)
-    end = datetime.datetime.today().strftime('%Y-%m-%d')    
+    if(timeframe=='6mago'):
+        end = (datetime.datetime.today()-datetime.timedelta(days=183)).strftime('%Y-%m-%d')
+    elif(timeframe=='3mago'):
+        end = (datetime.datetime.today()-datetime.timedelta(days=90)).strftime('%Y-%m-%d')
+    elif(timeframe=='1mago'):
+        end = (datetime.datetime.today()-datetime.timedelta(days=28)).strftime('%Y-%m-%d')
+    else:
+        end = datetime.datetime.today().strftime('%Y-%m-%d')    
     try:
         df = np.round(dr.DataReader(security,service,start,end),2)
         # df.sort_values('Date',inplace = True)
@@ -85,15 +92,30 @@ def get_log_ret(intdict,symb_list):
     return log_ret
 
 def trim_too_expensive(securities,max_price):
+
     prices = close_prices_loop('1d',securities['Symbol'])['Close'].max().reset_index()
     prices.columns = ['Symbol','Close']
+
     print(f"Keeping stocks with open prices below {max_price}")
     for index,row in prices.iterrows():
         if(row['Close']>max_price):
             securities = securities[securities['Symbol']!=row['Symbol']]
     print("Total securities: {}".format(len(securities.index)))
     securities = pd.merge(securities,prices,on='Symbol',how='inner')
+
+    prices6m = close_prices_loop('6mago',securities['Symbol'])['Close'].max().reset_index()
+    prices6m.columns = ['Symbol','Close']
+    prices6m.rename({'Close':'Close6m'},axis=1,inplace=True)
+    prices3m = close_prices_loop('3mago',securities['Symbol'])['Close'].max().reset_index()
+    prices3m.columns = ['Symbol','Close']
+    prices3m.rename({'Close':'Close3m'},axis=1,inplace=True)
+    prices1m = close_prices_loop('1mago',securities['Symbol'])['Close'].max().reset_index()
+    prices1m.columns = ['Symbol','Close']
+    prices1m.rename({'Close':'Close1m'},axis=1,inplace=True)    
+    securities = pd.merge(securities,prices3m,on='Symbol',how='inner')
+    securities = pd.merge(securities,prices1m,on='Symbol',how='inner')
     securities.to_csv('temp_data/securities.csv')
+    
     return securities
 
 def compile(libName,sourceFile):
@@ -125,7 +147,8 @@ def gen_portolio(securities,simulations,sector):
             fdict['Symbol'].append(row[0])
             fdict['Share'].append(row[1][0][0:4])
         final_df = pd.DataFrame.from_dict(fdict)
-        final_df = pd.merge(final_df,securities,on='Symbol')[['yyyy_mm_dd','Symbol','Share','Close','Name','Sector']].reset_index(drop=True)
+        final_df = pd.merge(final_df,securities,on='Symbol')[['yyyy_mm_dd','Symbol',\
+                                'Share','Close','Close6m','Close3m','Close1m','Name','Sector']].reset_index(drop=True)
         final_df.to_csv('results/{}_{}.csv'.format(sector.lower().replace(' ','_'),today),index=False)
         print("Done producing optimal portfolio")
     except ValueError as error:
