@@ -1,6 +1,7 @@
 # collection of tools to analyse stock information
 
 import datetime
+import time
 from typing import final
 import pandas as pd
 import numpy as np
@@ -57,9 +58,11 @@ def close_prices_loop(timeframe,security):
     while(cnt<num-residue):
         df2 = get_close_prices(timeframe,security[cnt:cnt+incr])
         df = pd.concat([df2,df],axis=1)
+        time.sleep(2.0) # adding small buffer
         cnt+=incr
     if(residue>0):
         df2 = get_close_prices(timeframe,security[cnt:cnt+residue+1])
+        time.sleep(2.0) # adding small buffer
         df = pd.concat([df2,df],axis=1)
     df.fillna(0,inplace=True)
     return df
@@ -150,6 +153,7 @@ def gen_portolio(securities,simulations,sector):
         print("Couldn't get Sharpe ratios - {}".format(error))
 
 def update(sector,maxPrice):
+    print(f"*****> Getting data for: {sector} <*****")
     securities = pd.read_csv('temp_data/sp500.csv')
     securities = securities[securities['Sector']==sector]
     securities = trim_too_expensive(securities,maxPrice)

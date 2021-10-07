@@ -2,24 +2,25 @@
 # Author: Marc-Antoine Lacroix
 
 import utils
+import pandas as pd
 import portfolio_management as pm
+
+def gen_all(stocks=100,max_price=100):
+    sectors = list(pd.read_csv('temp_data/sp500.csv')['Sector'].unique())
+    portfolios = []
+    for sector in sectors:
+        portfolios.append(pm.Portfolio(stocks,sector,max_price))
+    for obj in portfolios:
+        try:
+            obj.trigger_update() 
+        except ValueError as err:
+            print(f"%%%%% Error generating portolio {err} %%%%%")
 
 def main():
     
     utils.get_sp500()
     utils.compile('cpp_sharpe','sharpe')
-
-    healthcare = pm.Portfolio(100,'Health Care',100)
-    healthcare.trigger_update()
-
-    energy = pm.Portfolio(100,'Energy',100)
-    energy.trigger_update()
-
-    utilities = pm.Portfolio(100,'Utilities',100)
-    utilities.trigger_update()
-
-    industrials = pm.Portfolio(100,'Industrials',100)
-    industrials.trigger_update()
-
+    gen_all()
+    
 if __name__ == "__main__":
     main()
