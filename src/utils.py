@@ -67,9 +67,7 @@ def close_prices_loop(timeframe,security):
 def get_close_prices(timeframe,security):    
     service = 'yahoo'
     start = get_start(timeframe)
-    if(timeframe=='6mago'):
-        end = (datetime.datetime.today()-datetime.timedelta(days=182)).strftime('%Y-%m-%d')
-    elif(timeframe=='3mago'):
+    if(timeframe=='3mago'):
         end = (datetime.datetime.today()-datetime.timedelta(days=89)).strftime('%Y-%m-%d')
     elif(timeframe=='1mago'):
         end = (datetime.datetime.today()-datetime.timedelta(days=27)).strftime('%Y-%m-%d')
@@ -95,6 +93,12 @@ def trim_too_expensive(securities,max_price):
 
     prices = close_prices_loop('1d',securities['Symbol'])['Close'].max().reset_index()
     prices.columns = ['Symbol','Close']
+    prices3m = close_prices_loop('3mago',securities['Symbol'])['Close'].max().reset_index()
+    prices3m.columns = ['Symbol','Close']
+    prices3m.rename({'Close':'Close3m'},axis=1,inplace=True)
+    prices1m = close_prices_loop('1mago',securities['Symbol'])['Close'].max().reset_index()
+    prices1m.columns = ['Symbol','Close']
+    prices1m.rename({'Close':'Close1m'},axis=1,inplace=True)
 
     print(f"Keeping stocks with open prices below {max_price}")
     for index,row in prices.iterrows():
@@ -102,12 +106,7 @@ def trim_too_expensive(securities,max_price):
             securities = securities[securities['Symbol']!=row['Symbol']]
     print("Total securities: {}".format(len(securities.index)))
     securities = pd.merge(securities,prices,on='Symbol',how='inner')
-    prices3m = close_prices_loop('3mago',securities['Symbol'])['Close'].max().reset_index()
-    prices3m.columns = ['Symbol','Close']
-    prices3m.rename({'Close':'Close3m'},axis=1,inplace=True)
-    prices1m = close_prices_loop('1mago',securities['Symbol'])['Close'].max().reset_index()
-    prices1m.columns = ['Symbol','Close']
-    prices1m.rename({'Close':'Close1m'},axis=1,inplace=True)
+    
     securities = pd.merge(securities,prices3m,on='Symbol',how='inner')
     securities = pd.merge(securities,prices1m,on='Symbol',how='inner')
     securities.to_csv('temp_data/securities.csv')

@@ -15,5 +15,11 @@ def main():
     energy = pm.Portfolio(100,'Energy',100)
     energy.trigger_update()
 
+    utilities = pm.Portfolio(100,'Utilities',100)
+    utilities.trigger_update()
+
+    industrials = pm.Portfolio(100,'Industrials',100)
+    industrials.trigger_update()
+
 if __name__ == "__main__":
     main()
