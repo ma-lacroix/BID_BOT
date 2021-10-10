@@ -59,9 +59,9 @@ class Portfolio:
         print(self.df)
 
     def trigger_update(self):
-        # utils.update(self.sector,self.maxPrice)
+        utils.update(self.sector,self.maxPrice)
         self.init_csv_file()
-        # self.init_df()
-        # self.get_shares()
+        self.init_df()
+        self.get_shares()
         gcp.trigger_upload(self.csv_file)
         

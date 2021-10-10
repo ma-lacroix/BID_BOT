@@ -65,4 +65,4 @@ def trigger_upload(csv):
     projectId = get_project()
     client = get_client()
     read_csv(projectId,csv,client)
-    update_recent(client,projectId)
+    update_recent(projectId)
