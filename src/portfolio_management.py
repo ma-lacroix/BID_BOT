@@ -64,4 +64,5 @@ class Portfolio:
         self.init_df()
         self.get_shares()
         gcp.trigger_upload(self.csv_file)
+        # gcp.get_performance()
         

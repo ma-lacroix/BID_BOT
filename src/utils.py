@@ -55,6 +55,7 @@ def close_prices_loop(timeframe,security):
     residue = num%5
     incr = int((num-residue)/5)
     cnt = 0
+    timestart = datetime.datetime.now()
     while(cnt<num-residue):
         df2 = get_close_prices(timeframe,security[cnt:cnt+incr])
         df = pd.concat([df2,df],axis=1)
@@ -65,6 +66,8 @@ def close_prices_loop(timeframe,security):
         time.sleep(2.0) # adding small buffer
         df = pd.concat([df2,df],axis=1)
     df.fillna(0,inplace=True)
+    timeend = datetime.datetime.now()
+    print("\nRun time: {}".format((timeend-timestart).total_seconds()))
     return df
 
 def get_close_prices(timeframe,security):    
