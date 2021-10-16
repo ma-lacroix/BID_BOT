@@ -161,3 +161,42 @@ def update(sector,maxPrice):
     securities = securities[securities['Sector']==sector]
     securities = trim_too_expensive(securities,maxPrice)
     gen_portolio(securities,10000000,sector)
+
+
+#trim the data
+securities = pd.read_csv('temp_data/sp500.csv')
+securities = securities[securities['Sector']=='Energy']
+prices = close_prices_loop('3m',securities['Symbol'])['Close']
+# prices['Date'] = prices.index
+# prices.reset_index(drop=True,inplace=True)
+print(prices.columns)
+for col in prices.columns:
+    if(prices[col].iloc[-1] > 100):
+        prices.drop(col,inplace=True,axis=1)
+print(prices.columns)
+
+#get log returns
+log_ret = pd.DataFrame(prices/prices.shift(1)-1)
+# log_ret = pd.DataFrame(np.log(df/df.shift(1)))
+# log_ret['Date'] = log_ret.index
+# log_ret.reset_index(drop=True,inplace=True)
+log_ret.fillna(0,inplace=True)
+print(log_ret.head())
+
+#sharpe ratios
+today = datetime.datetime.strftime(datetime.datetime.today(),'%Y-%m-%d')
+fdict = {'yyyy_mm_dd':[],'Symbol':[],'Share':[]}
+final_df = pd.DataFrame()
+cpp_ratios(log_ret,10000)
+sol = open('temp_data/ratios.csv')
+r = csv.reader(sol)
+for row in zip(log_ret.columns,r):
+    fdict['yyyy_mm_dd'].append(today)
+    fdict['Symbol'].append(row[0])
+    fdict['Share'].append(row[1][0][0:4])
+final_df = pd.DataFrame.from_dict(fdict)
+# need to pull the closes from 1 and 3 months ago
+# final_df = pd.merge(final_df,securities,on='Symbol')[['yyyy_mm_dd','Symbol',\
+                        # 'Share','Close','Close3m','Close1m','Name','Sector']].reset_index(drop=True)
+# 'Energy' -> has to be replaced by Sector variable        
+final_df.to_csv('results/{}_{}.csv'.format('Energy'.lower().replace(' ','_'),today),index=False)
