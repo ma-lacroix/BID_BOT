@@ -60,6 +60,7 @@ def update_recent(projectId):
             WHERE yyyy_mm_dd = (
                 SELECT recent FROM r
                 )
+            AND REGEXP_CONTAINS(_TABLE_SUFFIX,r".*\_[0-9]{{8}}")
             GROUP BY 1,2,3,4,5,6,7,8,9,10
             )
             SELECT * FROM data WHERE Share > 0
@@ -96,3 +97,5 @@ def get_performance(sector='Energy'):
     df['yyyy_mm_dd'] = df.index
     df['yyyy_mm_dd'] = df['yyyy_mm_dd'].dt.strftime('%Y-%m-%d')
     df.to_gbq(table,project_id=projectId,credentials=client,if_exists='replace')
+
+update_recent('mythical-harbor-167208')
