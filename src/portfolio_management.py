@@ -5,6 +5,20 @@ import numpy as np
 import os
 import utils
 import gcp
+import time
+
+def timeit(f):
+
+    def timed(*args, **kw):
+
+        ts = time.time()
+        result = f(*args, **kw)
+        te = time.time()
+
+        print('Total run time: {} sec'.format(round(te-ts),2))
+        return result
+
+    return timed
 
 class Portfolio:
 
@@ -58,6 +72,7 @@ class Portfolio:
         self.df.to_csv(self.csv_file,index=False) # overwrite results file            
         print(self.df)
 
+    @timeit
     def trigger_update(self):
         utils.update(self.sector,self.maxPrice)
         self.init_csv_file()

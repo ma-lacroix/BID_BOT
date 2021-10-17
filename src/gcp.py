@@ -79,6 +79,7 @@ def get_stock_list(projectId,Sector,client):
     return df
 
 def trigger_upload(csv):
+    print("Uploading to BigQuery")
     projectId = get_project()
     client = get_client()
     read_csv(projectId,csv,client)
