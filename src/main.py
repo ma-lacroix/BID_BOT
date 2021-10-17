@@ -6,7 +6,7 @@ import sys
 import pandas as pd
 import portfolio_management as pm
 
-def gen_all(stocks=50,max_price=100):
+def gen_all(stocks,max_price):
     sectors = list(pd.read_csv('temp_data/sp500.csv')['Sector'].unique())
     portfolios = []
     for sector in sectors:

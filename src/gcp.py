@@ -6,7 +6,7 @@ import datetime
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-key = 'key/key.json'
+key = 'key/key.json' # GCP SA
 
 def get_project():
 # hide projectId
@@ -71,7 +71,7 @@ def get_stock_list(projectId,Sector,client):
     query = f'''
         SELECT 
             Symbol
-        FROM `mythical-harbor-167208.bid_bot.most_recent`
+        FROM `{projectId}.bid_bot.most_recent`
         WHERE Symbol != 'TOTAL'
         AND Sector = '{Sector}'
         GROUP BY 1
