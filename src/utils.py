@@ -129,5 +129,5 @@ def update(sector,maxPrice):
     securities = securities[securities['Sector']==sector]
     pList = genData(securities,maxPrice)
     securities = mergeSecPrices(pList[1:4],securities)
-    gen_portolio(securities,pList[0],10000,sector)
+    gen_portolio(securities,pList[0],10000000,sector)
 
