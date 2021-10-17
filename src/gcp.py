@@ -97,5 +97,3 @@ def get_performance(sector='Energy'):
     df['yyyy_mm_dd'] = df.index
     df['yyyy_mm_dd'] = df['yyyy_mm_dd'].dt.strftime('%Y-%m-%d')
     df.to_gbq(table,project_id=projectId,credentials=client,if_exists='replace')
-
-update_recent('mythical-harbor-167208')

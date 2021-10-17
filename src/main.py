@@ -2,6 +2,7 @@
 # Author: Marc-Antoine Lacroix
 
 import utils
+import sys
 import pandas as pd
 import portfolio_management as pm
 
@@ -20,7 +21,17 @@ def main():
     
     utils.get_sp500()
     utils.compile('cpp_sharpe','sharpe')
-    gen_all()
+    
+    try:
+        stocks = sys.argv[1]
+        max_price = sys.argv[2]
+    except:
+    # defaults
+        stocks = 50
+        max_price = 100
+    
+    gen_all(stocks,max_price)
     
 if __name__ == "__main__":
+#to run: main.py numStocks max_price
     main()
