@@ -21,9 +21,6 @@ jobs:
       run: |
         pip install pandas numpy time os pandas_datareader csv json os ctypes
         echo "Done installing pandas"
-  test-code:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Launch test
+    - name: Test code
       run: |
          python setup.py
