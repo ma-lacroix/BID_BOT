@@ -19,7 +19,7 @@ jobs:
         echo "Done installing pip"
     - name: Install dependencies
       run: |
-        pip install pandas numpy time os pandas_datareader csv json os ctypes
+        pip install pandas numpy pandas_datareader ctypes
         echo "Done installing pandas"
     - name: Test code
       run: |
