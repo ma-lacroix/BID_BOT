@@ -7,7 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
@@ -20,5 +19,12 @@ jobs:
         echo "Done installing pip"
     - name: Install dependencies
       run: |
-        pip install pandas
+        pip install sys pandas numpy time os pandas_datareader csv json os ctypes
+        import datetime
         echo "Done installing pandas"
+  test-code:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Launch test
+      run: |
+         python setup.py
