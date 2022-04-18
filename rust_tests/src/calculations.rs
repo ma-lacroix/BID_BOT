@@ -1,9 +1,3 @@
-pub struct Equation {
-    pub x1: i32,
-    pub symbol: Symbol,
-    pub x2: i32,
-    pub y: i32,
-}
 
 pub enum Symbol {
     Multiply,
@@ -22,6 +16,13 @@ impl Symbol {
         };
         total
     }
+}
+
+pub struct Equation {
+    pub x1: i32,
+    pub symbol: Symbol,
+    pub x2: i32,
+    pub y: i32,
 }
 
 impl Equation {

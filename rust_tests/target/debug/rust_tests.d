@@ -1,0 +1,1 @@
+/Users/mlacroix/.git/rust_tests/target/debug/rust_tests: /Users/mlacroix/.git/rust_tests/src/calculations.rs /Users/mlacroix/.git/rust_tests/src/lib.rs /Users/mlacroix/.git/rust_tests/src/main.rs /Users/mlacroix/.git/rust_tests/src/menu.rs
